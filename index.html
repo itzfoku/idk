@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ПРОТОКОЛ ОТБОРА // ТЕРМИНАЛ</title>
+    <style>
+        :root {
+            --bg: #080808;
+            --text: #e0e0e0;
+            --accent: #00ff66;
+            --dim: #555555;
+            --error: #ff3b30;
+            --border: #222222;
+        }
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'SF Mono', 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        .terminal {
+            width: 100%;
+            max-width: 680px;
+            border: 1px solid var(--border);
+            background: #0d0d0d;
+            padding: 28px;
+            box-shadow: 0 0 40px rgba(0, 255, 102, 0.05);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: var(--dim);
+        }
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-right: 6px;
+            box-shadow: 0 0 8px var(--accent);
+        }
+        .logo {
+            text-align: center;
+            font-size: 28px;
+            letter-spacing: 6px;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        .stage-title {
+            color: var(--accent);
+            font-size: 18px;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
+        .story-text {
+            line-height: 1.6;
+            font-size: 16px;
+            margin-bottom: 20px;
+            white-space: pre-line;
+        }
+        .cipher-box {
+            background: #141414;
+            border-left: 3px solid var(--accent);
+            padding: 14px;
+            margin: 18px 0;
+            font-size: 15px;
+            word-break: break-all;
+            color: #fff;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            flex: 1;
+            background: #050505;
+            border: 1px solid #333;
+            color: var(--accent);
+            font-family: inherit;
+            font-size: 17px;
+            padding: 14px;
+            outline: none;
+            text-transform: uppercase;
+        }
+        input[type="text"]:focus {
+            border-color: var(--accent);
+        }
+        button {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 14px 22px;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        button:active { opacity: 0.8; }
+        .hint-btn {
+            background: transparent;
+            color: var(--dim);
+            border: 1px solid #222;
+            padding: 8px 14px;
+            font-size: 13px;
+            margin-top: 16px;
+        }
+        .hint-box {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: #111;
+            color: #aaa;
+            font-size: 14px;
+            border: 1px dashed #333;
+        }
+        .error-msg {
+            color: var(--error);
+            margin-top: 12px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+        .badge {
+            border: 1px solid var(--accent);
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="terminal">
+    <div class="header">
+        <div><span class="status-dot"></span>УЗЕЛ СВЯЗИ АКТИВЕН</div>
+        <div id="timer">00:00</div>
+    </div>
+
+    <div class="logo">△ 3301-S</div>
+
+    <div id="game-area">
+        <div class="stage-title" id="stage-title">Загрузка...</div>
+        <div class="story-text" id="stage-text"></div>
+        <div class="cipher-box" id="stage-cipher"></div>
+
+        <div class="input-group">
+            <input type="text" id="answer-input" placeholder="ВВЕДИТЕ КЛЮЧ..." autocomplete="off">
+            <button onclick="checkAnswer()">ВВОД</button>
+        </div>
+
+        <div class="error-msg" id="error-msg"></div>
+
+        <button class="hint-btn" onclick="toggleHint()">[ ? ] ЗАПРОСИТЬ ПОДСКАЗКУ</button>
+        <div class="hint-box" id="hint-box"></div>
+    </div>
+</div>
+
+<script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzP6PEgoLG4SX9CyF4sJHtifAM2-hRL8puWnaKUG0dhUCmFBCN9sjk9PWAi8XV0cMee/exec";
+
+    // Этапы с SHA-256 хешами ответов (в верхнем регистре)
+    const STAGES = [
+        {
+            title: "ЭТАП 01 // ФИЛЬТР ВНИМАНИЯ",
+            text: "Мы ищем тех, кто умеет смотреть, а не просто видеть.\nРасшифруй место первой физической закладки в здании школы:",
+            cipher: "42 48 41 4B 49 4F 54 45 4B 41 (HEX → ASCII, транслит)\n\nНайди там книгу А. Азимова «Я, робот» и введи слово с закладки:",
+            // SHA-256 от "ВЕКТОР"
+            answerHash: "4b252e905a17609214006b8b06850e9b71c3274d3363f9327c07232959d9e205",
+            hint: "Переведи шестнадцатеричный код в буквы (получится БИБЛИОТЕКА). Внутри книги на 15 странице лежит закладка."
+        },
+        {
+            title: "ЭТАП 02 // НАБЛЮДАТЕЛЬНОСТЬ",
+            text: "Доступ подтвержден. Следующий узел находится на 3 этаже возле кабинета информатики.\nНайди на информационном стенде метку с символом △ и расшифруй последовательность:",
+            cipher: "Сдвиг Цезаря (+3): ФЛНДГД",
+            // SHA-256 от "ЦИКАДА"
+            answerHash: "86a173d7f0c9c6b66f9f0e888a6835661a027762a57198967c22249b942d7697",
+            hint: "Каждую букву в слове ФЛНДГД сдвинь на 3 позиции назад по русскому алфавиту."
+        },
+        {
+            title: "ЭТАП 03 // ПОЛЕВАЯ ЗАДАЧА",
+            text: "Отсчитай 10 шагов от главной лестницы в сторону актового зала. Проверь под подоконником третьего окна.\nВнутри конверта находится логическая задача. Введи числовой ключ:",
+            cipher: "Ожидание физического ключа из конверта #03...",
+            // SHA-256 от "42"
+            answerHash: "73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049",
+            hint: "В задаче внутри конверта нужно сложить только простые числа из таблицы."
+        }
+    ];
+
+    let currentStage = parseInt(localStorage.getItem("arg_stage")) || 0;
+    let startTime = parseInt(localStorage.getItem("arg_start")) || Date.now();
+    let hintsUsed = parseInt(localStorage.getItem("arg_hints")) || 0;
+    let playerId = localStorage.getItem("arg_id") || ("ID-" + Math.floor(1000 + Math.random() * 9000));
+
+    localStorage.setItem("arg_start", startTime);
+    localStorage.setItem("arg_id", playerId);
+
+    // Функция вычисления SHA-256 в браузере
+    async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Отправка аналитики в Google Таблицу
+    function sendStats(eventName) {
+        if (!GOOGLE_SCRIPT_URL) return;
+        const timeMins = ((Date.now() - startTime) / 60000).toFixed(1);
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify({
+                playerId: playerId,
+                stage: currentStage + 1,
+                event: eventName,
+                timeMins: timeMins,
+                hints: hintsUsed
+            })
+        }).catch(() => {});
+    }
+
+    // Логируем старт нового игрока
+    if (!localStorage.getItem("arg_started_logged")) {
+        sendStats("START");
+        localStorage.setItem("arg_started_logged", "1");
+    }
+
+    setInterval(() => {
+        if (currentStage >= STAGES.length) return;
+        const diff = Math.floor((Date.now() - startTime) / 1000);
+        const mins = String(Math.floor(diff / 60)).padStart(2, '0');
+        const secs = String(diff % 60).padStart(2, '0');
+        document.getElementById("timer").innerText = `${mins}:${secs}`;
+    }, 1000);
+
+    function renderStage() {
+        const gameArea = document.getElementById("game-area");
+
+        if (currentStage >= STAGES.length) {
+            const totalMins = ((Date.now() - startTime) / 60000).toFixed(1);
+            gameArea.innerHTML = `
+                <div class="stage-title">ОТБОР ЗАВЕРШЕН // ДОСТУП ОТКРЫТ</div>
+                <div class="story-text">Вы доказали способность находить скрытые связи. Ваши данные внесены в Реестр.</div>
+                <div class="badge">
+                    <div style="color:#888; font-size:13px;">ПЕРСОНАЛЬНЫЙ ИДЕНТИФИКАТОР</div>
+                    <div style="font-size:28px; color:#00ff66; margin:10px 0;">${playerId}</div>
+                    <div style="font-size:14px;">Время: <b>${totalMins} мин.</b> | Подсказок: <b>${hintsUsed}</b></div>
+                </div>
+                <div class="story-text" style="margin-top:20px; font-size:14px; color:#aaa;">
+                    Покажите этот экран организатору, чтобы получить физический знак отличия.
+                </div>
+                <button class="hint-btn" onclick="resetGame()">[ СБРОСИТЬ ПРОГРЕСС ]</button>
+            `;
+            return;
+        }
+
+        const stage = STAGES[currentStage];
+        document.getElementById("stage-title").innerText = stage.title;
+        document.getElementById("stage-text").innerText = stage.text;
+        document.getElementById("stage-cipher").innerText = stage.cipher;
+        document.getElementById("hint-box").innerText = stage.hint;
+        document.getElementById("hint-box").style.display = "none";
+        document.getElementById("answer-input").value = "";
+        document.getElementById("error-msg").innerText = "";
+    }
+
+    async function checkAnswer() {
+        const input = document.getElementById("answer-input").value.trim().toUpperCase();
+        if (!input) return;
+
+        const inputHash = await sha256(input);
+        const correctHash = STAGES[currentStage].answerHash;
+
+        if (inputHash === correctHash) {
+            sendStats("STAGE_PASSED");
+            currentStage++;
+            localStorage.setItem("arg_stage", currentStage);
+            if (currentStage >= STAGES.length) {
+                sendStats("FINISHED");
+            }
+            renderStage();
+        } else {
+            sendStats("WRONG_ANSWER: " + input);
+            document.getElementById("error-msg").innerText = "[ ОШИБКА ]: НЕВЕРНЫЙ КЛЮЧ ДОСТУПА";
+        }
+    }
+
+    function toggleHint() {
+        const box = document.getElementById("hint-box");
+        if (box.style.display === "none") {
+            box.style.display = "block";
+            hintsUsed++;
+            localStorage.setItem("arg_hints", hintsUsed);
+            sendStats("HINT_USED");
+        }
+    }
+
+    function resetGame() {
+        localStorage.clear();
+        location.reload();
+    }
+
+    document.getElementById("answer-input").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") checkAnswer();
+    });
+
+    renderStage();
+</script>
+
+</body>
+</html>
