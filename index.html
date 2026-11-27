@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LogicArena — Интерактивная викторина</title>
+    <title>MINDPULSE — Открытые логические испытания</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-purple: #46178f;
-            --bg-dark: #25076b;
-            --red: #e21b3c;
-            --red-shadow: #990f26;
-            --blue: #1368ce;
-            --blue-shadow: #0b4182;
-            --yellow: #d89e00;
-            --yellow-shadow: #966d00;
-            --green: #26890c;
-            --green-shadow: #175406;
+            --bg-1: #0f172a;
+            --bg-2: #1e1b4b;
+            --surface: rgba(30, 41, 59, 0.72);
+            --border: rgba(255, 255, 255, 0.12);
+            --accent: #38bdf8;
+            --accent-2: #a855f7;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --text: #f8fafc;
+            --muted: #94a3b8;
         }
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
         html, body {
             margin: 0;
@@ -30,30 +30,28 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: radial-gradient(circle at top, #5e22b8 0%, var(--bg-purple) 55%, var(--bg-dark) 100%);
-            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(circle at 15% 20%, #311042 0%, var(--bg-2) 45%, var(--bg-1) 100%);
+            color: var(--text);
         }
 
-        /* Декоративные фигуры на фоне */
-        .bg-shapes {
+        /* Живые световые пятна на фоне */
+        .orb {
             position: fixed;
-            inset: 0;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.35;
             pointer-events: none;
-            overflow: hidden;
             z-index: 0;
-            opacity: 0.12;
+            animation: floatOrb 14s ease-in-out infinite alternate;
         }
-        .bg-shapes span {
-            position: absolute;
-            font-size: 160px;
-            font-weight: 900;
+        .orb-1 { width: 420px; height: 420px; background: #6366f1; top: -100px; left: -80px; }
+        .orb-2 { width: 380px; height: 380px; background: #ec4899; bottom: -90px; right: -60px; animation-delay: -5s; }
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 30px) scale(1.12); }
         }
-        .bg-shapes span:nth-child(1) { top: -30px; left: -20px; transform: rotate(-15deg); }
-        .bg-shapes span:nth-child(2) { bottom: 10%; right: -20px; transform: rotate(20deg); }
-        .bg-shapes span:nth-child(3) { top: 45%; left: 8%; font-size: 110px; }
 
-        /* Общий контейнер на весь экран */
         .screen {
             position: relative;
             z-index: 1;
@@ -62,406 +60,455 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 18px 24px 24px 24px;
+            padding: clamp(16px, 3vw, 32px);
         }
 
-        /* Стартовый экран */
+        /* 1. СТАРТОВЫЙ ЭКРАН */
         .start-screen {
             justify-content: center;
             align-items: center;
             text-align: center;
-            gap: 24px;
+            gap: 22px;
         }
-        .logo-title {
-            font-size: clamp(36px, 6vw, 64px);
-            font-weight: 900;
-            letter-spacing: -1px;
-            text-shadow: 0 6px 0 rgba(0,0,0,0.25);
-            margin: 0;
-        }
-        .logo-sub {
-            font-size: clamp(16px, 2.5vw, 22px);
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0;
-            font-weight: 600;
-        }
-        .nick-input {
-            width: 100%;
-            max-width: 380px;
-            padding: 18px 22px;
-            font-size: 20px;
+        .brand-pill {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: var(--accent);
             font-weight: 800;
+            font-size: 13px;
+            letter-spacing: 2px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            text-transform: uppercase;
+        }
+        .hero-title {
+            font-size: clamp(38px, 6vw, 68px);
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(135deg, #ffffff 20%, #38bdf8 60%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1.5px;
+        }
+        .hero-sub {
+            font-size: clamp(16px, 2.2vw, 20px);
+            color: var(--muted);
+            max-width: 620px;
+            margin: 0;
+            line-height: 1.5;
+        }
+        .start-box {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 8px;
+        }
+        .name-input {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: 18px;
+            font-weight: 700;
             font-family: inherit;
             text-align: center;
-            border: none;
-            border-radius: 16px;
-            background: #fff;
-            color: #1e293b;
-            box-shadow: 0 8px 0 rgba(0,0,0,0.25);
-            outline: none;
-        }
-        .btn-start {
-            width: 100%;
-            max-width: 380px;
-            padding: 20px;
-            font-size: 22px;
-            font-weight: 900;
-            font-family: inherit;
-            text-transform: uppercase;
-            background: #26890c;
+            border-radius: 18px;
+            border: 2px solid var(--border);
+            background: rgba(15, 23, 42, 0.8);
             color: #fff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .name-input:focus { border-color: var(--accent); }
+        .btn-main {
+            width: 100%;
+            padding: 18px 28px;
+            font-size: 18px;
+            font-weight: 800;
+            font-family: inherit;
             border: none;
-            border-radius: 16px;
-            box-shadow: 0 7px 0 #175406;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            color: #090d16;
             cursor: pointer;
-            transition: transform 0.1s;
+            box-shadow: 0 12px 30px -8px rgba(56, 189, 248, 0.5);
+            transition: transform 0.15s, filter 0.15s;
         }
-        .btn-start:active {
-            transform: translateY(5px);
-            box-shadow: 0 2px 0 #175406;
-        }
+        .btn-main:active { transform: scale(0.98); }
 
-        /* Верхняя панель во время игры */
-        .hud {
+        /* 2. ВЕРХНИЙ HUD И ПРОГРЕСС */
+        .top-hud {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
         }
-        .hud-pill {
-            background: rgba(0, 0, 0, 0.32);
-            backdrop-filter: blur(8px);
+        .hud-chip {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
             padding: 10px 18px;
-            border-radius: 999px;
-            font-weight: 800;
-            font-size: clamp(14px, 2vw, 17px);
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 15px;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-variant-numeric: tabular-nums;
         }
-        .streak-badge {
-            background: linear-gradient(135deg, #ff6b00, #ff2a00);
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-weight: 900;
-            font-size: 15px;
-            box-shadow: 0 4px 15px rgba(255, 72, 0, 0.5);
-            transition: transform 0.2s;
+        .streak-chip {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(244, 63, 94, 0.2));
+            border-color: rgba(245, 158, 11, 0.5);
+            color: #fbbf24;
         }
-
-        /* Полоса таймера */
-        .timer-bar-wrap {
+        .progress-track {
             width: 100%;
-            height: 10px;
-            background: rgba(255,255,255,0.18);
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 999px;
             overflow: hidden;
-            margin: 12px 0;
+            margin-top: 14px;
         }
-        .timer-bar-fill {
+        .progress-fill {
             height: 100%;
-            width: 100%;
-            background: #00f5d4;
-            transition: width 0.1s linear, background-color 0.3s;
+            width: 0%;
+            background: linear-gradient(90deg, #38bdf8, #a855f7, #ec4899);
+            border-radius: 999px;
+            transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* Центральная карточка вопроса */
-        .question-stage {
+        /* 3. ЦЕНТРАЛЬНАЯ ОБЛАСТЬ ВОПРОСА НА ВЕСЬ ЭКРАН */
+        .question-center {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            margin: 8px 0 18px 0;
-        }
-        .question-card {
+            max-width: 880px;
             width: 100%;
-            max-width: 960px;
-            height: 100%;
-            max-height: 360px;
-            background: #ffffff;
-            color: #1e1b4b;
-            border-radius: 24px;
-            padding: clamp(20px, 4vw, 36px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            margin: 0 auto;
             text-align: center;
-            box-shadow: 0 12px 0 rgba(0,0,0,0.22);
-            position: relative;
+            gap: 22px;
         }
-        .q-category {
-            position: absolute;
-            top: -14px;
-            background: #ffbe0b;
-            color: #1e1b4b;
-            font-weight: 900;
-            font-size: 13px;
-            text-transform: uppercase;
-            padding: 6px 18px;
+        .topic-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 16px;
             border-radius: 999px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            background: rgba(168, 85, 247, 0.18);
+            border: 1px solid rgba(168, 85, 247, 0.45);
+            color: #e9d5ff;
         }
-        .q-text {
-            font-size: clamp(20px, 3.2vw, 32px);
+        .q-prompt {
+            font-size: clamp(22px, 3.6vw, 36px);
             font-weight: 800;
             line-height: 1.35;
             margin: 0;
             white-space: pre-line;
-        }
-
-        /* Сетка 4 кнопок как в Kahoot */
-        .answers-grid {
-            width: 100%;
-            max-width: 1100px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            height: 38%;
-            min-height: 190px;
-        }
-        .ans-btn {
-            border: none;
-            border-radius: 18px;
             color: #ffffff;
-            font-family: inherit;
-            font-size: clamp(17px, 2.5vw, 24px);
-            font-weight: 800;
-            padding: 16px 22px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            text-align: left;
-            cursor: pointer;
-            transition: transform 0.08s ease, filter 0.15s;
         }
-        .ans-btn:active {
-            transform: translateY(5px);
+        .q-highlight {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 16px 28px;
+            border-radius: 18px;
+            font-size: clamp(20px, 3.2vw, 30px);
+            color: var(--accent);
+            letter-spacing: 2px;
         }
-        .ans-btn.red { background: var(--red); box-shadow: 0 7px 0 var(--red-shadow); }
-        .ans-btn.blue { background: var(--blue); box-shadow: 0 7px 0 var(--blue-shadow); }
-        .ans-btn.yellow { background: var(--yellow); box-shadow: 0 7px 0 var(--yellow-shadow); }
-        .ans-btn.green { background: var(--green); box-shadow: 0 7px 0 var(--green-shadow); }
 
-        .shape-icon {
-            width: 42px;
-            height: 42px;
-            min-width: 42px;
-            background: rgba(0,0,0,0.18);
-            border-radius: 10px;
+        /* Поле ввода открытого ответа */
+        .answer-zone {
+            width: 100%;
+            max-width: 620px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+        .open-input {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.88);
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            border-radius: 18px;
+            padding: 18px 22px;
+            font-size: clamp(18px, 2.5vw, 22px);
+            font-weight: 700;
+            font-family: inherit;
+            color: #ffffff;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .open-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18);
+        }
+        .btn-submit {
+            padding: 18px 30px;
+            border-radius: 18px;
+            border: none;
+            background: var(--accent);
+            color: #090d16;
+            font-family: inherit;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            white-space: nowrap;
+        }
+        .btn-submit:active { transform: scale(0.96); }
+
+        .error-banner {
+            color: #fda4af;
+            font-size: 15px;
+            font-weight: 700;
+            min-height: 22px;
+        }
+
+        .hint-drawer {
+            display: none;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: #fde68a;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-size: 15px;
+            line-height: 1.45;
+            max-width: 620px;
+        }
+
+        /* Нижняя панель действий */
+        .bottom-bar {
             display: flex;
             justify-content: center;
-            align-items: center;
-            font-size: 22px;
+            gap: 14px;
+        }
+        .btn-subtle {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 11px 20px;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-subtle:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
         }
 
-        /* Полноэкранный оверлей ответа (Верно / Неверно) */
-        .feedback-overlay {
+        /* Оверлей разбора ответа */
+        .resolve-overlay {
             position: fixed;
             inset: 0;
-            z-index: 50;
+            z-index: 40;
+            background: rgba(9, 13, 22, 0.92);
+            backdrop-filter: blur(18px);
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             padding: 28px;
-            animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: fadeUp 0.25s ease;
         }
-        @keyframes popIn {
-            from { transform: scale(0.92); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .feedback-overlay.correct { background: #26890c; }
-        .feedback-overlay.wrong { background: #e21b3c; }
-        .fb-icon {
-            font-size: 76px;
+        .resolve-badge {
+            font-size: 64px;
             margin-bottom: 10px;
         }
-        .fb-title {
-            font-size: clamp(32px, 5vw, 52px);
-            font-weight: 900;
-            margin: 0 0 12px 0;
+        .resolve-title {
+            font-size: clamp(28px, 5vw, 44px);
+            font-weight: 800;
+            margin: 0 0 10px 0;
         }
-        .fb-points {
-            background: rgba(0,0,0,0.25);
-            padding: 12px 28px;
-            border-radius: 999px;
-            font-size: 24px;
-            font-weight: 900;
-            margin-bottom: 18px;
+        .resolve-title.ok { color: var(--success); }
+        .resolve-title.skip { color: var(--warning); }
+        .resolve-points {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 20px;
         }
-        .fb-explain {
-            max-width: 640px;
-            font-size: 18px;
-            line-height: 1.5;
-            background: rgba(255,255,255,0.15);
-            padding: 18px 24px;
-            border-radius: 18px;
+        .resolve-card {
+            max-width: 620px;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 22px 26px;
+            font-size: 17px;
+            line-height: 1.55;
+            color: #e2e8f0;
             margin-bottom: 28px;
         }
-        .btn-next {
-            background: #ffffff;
-            color: #1e1b4b;
-            border: none;
-            border-radius: 16px;
-            padding: 18px 42px;
-            font-family: inherit;
-            font-size: 20px;
-            font-weight: 900;
-            box-shadow: 0 7px 0 rgba(0,0,0,0.25);
-            cursor: pointer;
-        }
 
-        /* Финальный экран подиума */
-        .podium-screen {
+        /* Финальный экран результатов */
+        .results-screen {
             display: none;
             justify-content: center;
             align-items: center;
             text-align: center;
         }
-        .podium-card {
-            background: #ffffff;
-            color: #1e1b4b;
-            border-radius: 28px;
-            padding: clamp(24px, 4vw, 40px);
+        .results-box {
             width: 100%;
-            max-width: 680px;
-            box-shadow: 0 14px 0 rgba(0,0,0,0.25);
+            max-width: 720px;
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: clamp(24px, 4vw, 42px);
         }
-        .final-score {
-            font-size: clamp(44px, 7vw, 68px);
-            font-weight: 900;
-            color: var(--bg-purple);
-            margin: 8px 0;
+        .score-big {
+            font-size: clamp(48px, 7vw, 72px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 6px 0;
         }
-        .final-grid {
+        .rank-tag {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.18);
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            color: #6ee7b7;
+            font-weight: 800;
+            padding: 8px 20px;
+            border-radius: 999px;
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+        .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
-            margin: 24px 0;
+            margin-bottom: 28px;
         }
-        .f-box {
-            background: #f1f5f9;
+        .metric-card {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid var(--border);
+            border-radius: 18px;
             padding: 16px 10px;
-            border-radius: 16px;
         }
-        .f-val {
-            font-size: 24px;
-            font-weight: 900;
-            color: #0f172a;
-        }
-        .f-lbl {
-            font-size: 12px;
-            font-weight: 700;
-            color: #64748b;
-            margin-top: 4px;
+        .m-val { font-size: 24px; font-weight: 800; color: #fff; }
+        .m-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 700; }
+
+        .shake { animation: shakeAnim 0.35s ease; }
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
-        @media (max-width: 640px) {
-            .answers-grid {
-                grid-template-columns: 1fr;
-                height: auto;
-                gap: 10px;
-            }
-            .ans-btn { padding: 14px 16px; }
-            .final-grid { grid-template-columns: 1fr; }
+        @media (max-width: 680px) {
+            .input-row { flex-direction: column; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
 
-<div class="bg-shapes">
-    <span>▲</span>
-    <span>◆</span>
-    <span>●</span>
-</div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
 
 <!-- 1. СТАРТОВЫЙ ЭКРАН -->
 <div class="screen start-screen" id="start-screen">
-    <div style="font-size: 64px;">⚡</div>
-    <h1 class="logo-title">LOGIC ARENA</h1>
-    <p class="logo-sub">Отвечай быстро и точно! Чем быстрее правильный ответ — тем больше очков и выше множитель серии.</p>
-    <input type="text" class="nick-input" id="player-name" placeholder="Введи своё имя..." maxlength="18">
-    <button class="btn-start" onclick="startGame()">Поехали! 🚀</button>
+    <div class="brand-pill">Интеллектуальный марафон</div>
+    <h1 class="hero-title">MINDPULSE</h1>
+    <p class="hero-sub">15 открытых логических задач на дедукцию, алгоритмы, числа и нестандартное мышление. Никаких вариантов ответа — только твой интеллект.</p>
+    <div class="start-box">
+        <input type="text" class="name-input" id="player-name" placeholder="Введи своё имя или ник..." maxlength="20">
+        <button class="btn-main" onclick="startGame()">Начать испытание →</button>
+    </div>
 </div>
 
-<!-- 2. ИГРОВОЙ ЭКРАН НА ВЕСЬ ЭКРАН -->
+<!-- 2. ЭКРАН ОТКРЫТОГО ВОПРОСА -->
 <div class="screen" id="game-screen" style="display: none;">
     <div>
-        <div class="hud">
-            <div class="hud-pill" id="hud-step">1 / 7</div>
-            <div class="streak-badge" id="hud-streak" style="opacity: 0;">🔥 Серия: 0</div>
-            <div class="hud-pill" id="hud-score">🏆 0</div>
+        <div class="top-hud">
+            <div class="hud-chip" id="hud-progress">Задача 1 из 15</div>
+            <div class="hud-chip streak-chip" id="hud-streak" style="display: none;">🔥 Серия: 0</div>
+            <div class="hud-chip" id="hud-score">⚡ 0 очк.</div>
+            <div class="hud-chip" id="hud-timer">⏱ 00:00</div>
         </div>
-        <div class="timer-bar-wrap">
-            <div class="timer-bar-fill" id="timer-bar"></div>
-        </div>
-    </div>
-
-    <div class="question-stage">
-        <div class="question-card">
-            <div class="q-category" id="q-category">Категория</div>
-            <p class="q-text" id="q-text">Текст вопроса</p>
+        <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
         </div>
     </div>
 
-    <div class="answers-grid">
-        <button class="ans-btn red" onclick="selectAnswer(0)">
-            <div class="shape-icon">▲</div>
-            <span id="opt-0">Вариант 1</span>
-        </button>
-        <button class="ans-btn blue" onclick="selectAnswer(1)">
-            <div class="shape-icon">◆</div>
-            <span id="opt-1">Вариант 2</span>
-        </button>
-        <button class="ans-btn yellow" onclick="selectAnswer(2)">
-            <div class="shape-icon">●</div>
-            <span id="opt-2">Вариант 3</span>
-        </button>
-        <button class="ans-btn green" onclick="selectAnswer(3)">
-            <div class="shape-icon">■</div>
-            <span id="opt-3">Вариант 4</span>
-        </button>
+    <div class="question-center" id="question-container">
+        <div class="topic-tag" id="q-topic">Категория</div>
+        <h2 class="q-prompt" id="q-text">Текст вопроса</h2>
+        <div class="q-highlight" id="q-code" style="display: none;"></div>
+
+        <div class="answer-zone">
+            <div class="input-row">
+                <input type="text" class="open-input" id="open-answer" placeholder="Впиши свой ответ..." autocomplete="off">
+                <button class="btn-submit" onclick="submitAnswer()">Проверить</button>
+            </div>
+            <div class="error-banner" id="error-banner"></div>
+        </div>
+
+        <div class="hint-drawer" id="hint-box"></div>
+    </div>
+
+    <div class="bottom-bar">
+        <button class="btn-subtle" onclick="toggleHint()">💡 Взять подсказку (−200 очк.)</button>
+        <button class="btn-subtle" onclick="skipTask()">Пропустить задачу ⏭</button>
     </div>
 </div>
 
-<!-- 3. ЭКРАН РЕЗУЛЬТАТА ПОСЛЕ КАЖДОГО ВОПРОСА -->
-<div class="feedback-overlay" id="feedback-screen">
-    <div class="fb-icon" id="fb-icon">🎉</div>
-    <h2 class="fb-title" id="fb-title">ВЕРНО!</h2>
-    <div class="fb-points" id="fb-points">+950 очков</div>
-    <div class="fb-explain" id="fb-explain">Пояснение к задаче</div>
-    <button class="btn-next" onclick="nextQuestion()">Дальше →</button>
+<!-- 3. ЭКРАН РАЗБОРА ПОСЛЕ КАЖДОЙ ЗАДАЧИ -->
+<div class="resolve-overlay" id="resolve-screen">
+    <div class="resolve-badge" id="res-icon">✨</div>
+    <h2 class="resolve-title ok" id="res-title">ОТЛИЧНО!</h2>
+    <div class="resolve-points" id="res-points">+1000 очков</div>
+    <div class="resolve-card" id="res-explain">Объяснение решения</div>
+    <button class="btn-main" style="max-width: 320px;" onclick="goNext()">Следующая задача →</button>
 </div>
 
-<!-- 4. ФИНАЛЬНЫЙ ПОДИУМ -->
-<div class="screen podium-screen" id="podium-screen">
-    <div class="podium-card">
-        <div style="font-size: 54px;">🏆</div>
-        <div style="font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px;" id="final-nick">Игрок</div>
-        <div class="final-score" id="final-score">0</div>
-        <div style="font-weight: 700; color: #46178f;" id="final-rank">Ранг: Мастер логики</div>
+<!-- 4. ИТОГОВЫЕ РЕЗУЛЬТАТЫ -->
+<div class="screen results-screen" id="results-screen">
+    <div class="results-box">
+        <div style="font-size: 48px; margin-bottom: 6px;">🏆</div>
+        <div style="color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;" id="fin-name">Участник</div>
+        <div class="score-big" id="fin-score">0</div>
+        <div class="rank-tag" id="fin-rank">Ранг: Аналитик</div>
 
-        <div class="final-grid">
-            <div class="f-box">
-                <div class="f-val" id="final-correct">0 / 7</div>
-                <div class="f-lbl">Правильных</div>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-val" id="fin-solved">0 / 15</div>
+                <div class="m-lbl">Решено</div>
             </div>
-            <div class="f-box">
-                <div class="f-val" id="final-accuracy">0%</div>
-                <div class="f-lbl">Точность</div>
+            <div class="metric-card">
+                <div class="m-val" id="fin-time">00:00</div>
+                <div class="m-lbl">Время</div>
             </div>
-            <div class="f-box">
-                <div class="f-val" id="final-streak">0</div>
-                <div class="f-lbl">Лучшая серия 🔥</div>
+            <div class="metric-card">
+                <div class="m-val" id="fin-streak">0</div>
+                <div class="m-lbl">Макс. серия 🔥</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-val" id="fin-hints">0</div>
+                <div class="m-lbl">Подсказок</div>
             </div>
         </div>
 
-        <button class="btn-start" style="max-width: 100%;" onclick="location.reload()">Сыграть снова 🔄</button>
+        <button class="btn-main" style="max-width: 360px;" onclick="location.reload()">Пройти заново 🔄</button>
     </div>
 </div>
 
@@ -469,71 +516,145 @@
 <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzP6PEgoLG4SX9CyF4sJHtifAM2-hRL8puWnaKUG0dhUCmFBCN9sjk9PWAi8XV0cMee/exec";
 
-    const QUESTIONS = [
+    // 15 открытых логических задач (поддерживается несколько синонимов ответа)
+    const TASKS = [
         {
-            category: "🔢 Числовой ряд",
-            text: "Продолжи последовательность:\n2,  6,  12,  20,  30,  ?",
-            options: ["38", "40", "42", "44"],
-            correct: 2,
-            explain: "Разница между числами растёт на 2: +4, +6, +8, +10, значит дальше +12 (30 + 12 = 42)."
+            topic: "🔢 Числовые ряды",
+            text: "Определи следующее число в последовательности:",
+            code: "2,  6,  12,  20,  30,  ?",
+            answers: ["42"],
+            hint: "Посмотри на разницу между соседними числами: +4, +6, +8, +10...",
+            explain: "Разница увеличивается на 2 на каждом шаге: 30 + 12 = 42."
         },
         {
-            category: "🐌 Классическая логика",
-            text: "Улитка ползёт по столбу высотой 10 м. За день +3 м, за ночь −2 м.\nНа какой день она впервые достигнет вершины?",
-            options: ["На 10-й день", "На 8-й день", "На 7-й день", "На 9-й день"],
-            correct: 1,
-            explain: "За 7 суток улитка поднимется на 7 метров, а на 8-й день проползёт оставшиеся 3 метра и сразу окажется на вершине!"
+            topic: "🐌 Классическая логика",
+            text: "Улитка ползёт по столбу высотой 10 метров. За день она поднимается на 3 метра, а за ночь сползает на 2 метра.\nНа какой по счёту день она впервые достигнет вершины?",
+            code: "",
+            answers: ["8", "ВОСЬМОЙ", "НА 8", "8 ДЕНЬ"],
+            hint: "За 7 суток она окажется на высоте 7 метров. Сколько останется пройти на 8-й день?",
+            explain: "К концу 7-х суток улитка на высоте 7 метров, а на 8-й день она проползает оставшиеся 3 метра и достигает вершины."
         },
         {
-            category: "🎭 Рыцари и лжецы",
-            text: "Рыцари всегда говорят правду, лжецы всегда лгут.\nЖитель А сказал: «Мы оба с Б — лжецы». Кто они?",
-            options: ["Оба лжецы", "А — рыцарь, Б — лжец", "А — лжец, Б — рыцарь", "Оба рыцари"],
-            correct: 2,
-            explain: "Рыцарь не может солгать, что он лжец. Значит А — лжец, а его фраза «мы оба лжецы» — ложь. Следовательно, Б — рыцарь."
+            topic: "🔤 Закономерности",
+            text: "Какая буква должна стоять следующей в этом ряду?",
+            code: "О,  Д,  Т,  Ч,  П,  Ш,  С,  ?",
+            answers: ["В"],
+            hint: "Это первые буквы слов: Один, Два, Три, Четыре...",
+            explain: "Ряд составлен из первых букв натуральных чисел: С — Семь, следующая В — Восемь."
         },
         {
-            category: "🔤 Логика букв",
-            text: "Какая буква должна стоять следующей?\nО,  Д,  Т,  Ч,  П,  Ш,  С,  ?",
-            options: ["В", "Д", "К", "М"],
-            correct: 0,
-            explain: "Это первые буквы чисел: Один, Два, Три, Четыре, Пять, Шесть, Семь, Восемь (В)."
+            topic: "🎭 Рыцари и лжецы",
+            text: "Рыцари всегда говорят правду, лжецы всегда лгут.\nЖитель А сказал: «Мы оба с Б — лжецы».\nКто из них рыцарь — А или Б? (Впиши одну букву)",
+            code: "",
+            answers: ["Б", "B"],
+            hint: "Может ли рыцарь назвать себя лжецом? А если А лжёт, то фраза «мы оба лжецы» — неправда.",
+            explain: "А не может быть рыцарем (иначе бы он солгал). Значит А — лжец, а раз утверждение «мы оба лжецы» ложно, то Б — рыцарь."
         },
         {
-            category: "⚖️ Алгоритмы",
-            text: "Из 9 одинаковых монет одна фальшивая (легче остальных).\nЗа сколько взвешиваний на весах без гирь её точно можно найти?",
-            options: ["За 1", "За 2", "За 3", "За 4"],
-            correct: 1,
-            explain: "Делим монеты на 3 кучки по 3 штуки: 1-м взвешиванием находим лёгкую тройку, 2-м — лёгкую монету из неё."
+            topic: "⚖️ Алгоритмы",
+            text: "Из 9 внешне одинаковых монет одна фальшивая (она легче остальных).\nЗа какое минимальное количество взвешиваний на чашечных весах без гирь можно гарантированно найти фальшивую монету?",
+            code: "",
+            answers: ["2", "ДВА"],
+            hint: "Раздели монеты на три равные кучки по 3 монеты.",
+            explain: "1-м взвешиванием сравниваем две тройки (находим лёгкую тройку), 2-м взвешиванием сравниваем две монеты из этой тройки."
         },
         {
-            category: "🕒 Часы и углы",
-            text: "На часах ровно 3:15.\nЧему равен угол между часовой и минутной стрелками?",
-            options: ["0°", "7.5°", "15°", "5°"],
-            correct: 1,
-            explain: "Минутная стрелка ровно на тройке, а часовая за 15 минут прошла 1/4 пути от 3 к 4 (четверть от 30° = 7.5°)."
+            topic: "🕒 Геометрия циферблата",
+            text: "Часы показывают ровно 3:15.\nЧему равен угол (в градусах) между часовой и минутной стрелками?",
+            code: "3 : 15",
+            answers: ["7.5", "7,5", "7.5°", "7,5°"],
+            hint: "Минутная стрелка ровно на тройке, но часовая за 15 минут прошла четверть пути от 3 до 4 (1/4 от 30°).",
+            explain: "Одно деление часа = 30°. За 15 минут (четверть часа) часовая стрелка сместится на 30° / 4 = 7.5°."
         },
         {
-            category: "🔐 Шифр",
-            text: "Если КОД = 12-16-5,\nто чему равно слово УМ?",
-            options: ["20-13", "21-14", "22-15", "19-12"],
-            correct: 1,
-            explain: "Это порядковые номера букв в русском алфавите: У — 21-я буква, М — 14-я."
+            topic: "🔐 Шифрование",
+            text: "Если слово КОД шифруется как 12-16-5,\nто как зашифровать слово УМ? (Запиши числа через дефис)",
+            code: "КОД → 12-16-5   |   УМ → ?",
+            answers: ["21-14"],
+            hint: "Каждой букве соответствует её порядковый номер в русском алфавите.",
+            explain: "В русском алфавите буква У стоит на 21-м месте, а М — на 14-м: 21-14."
+        },
+        {
+            topic: "🧬 Внимательность",
+            text: "В комнате горят 7 свечей. Подул ветер, и 2 свечи погасли. Позже погасла ещё 1 свеча. Окно закрыли, и больше свечи не гасли.\nСколько свечей останется к утру?",
+            code: "",
+            answers: ["3", "ТРИ"],
+            hint: "Подумай, что произойдёт со свечами, которые продолжали гореть всю ночь.",
+            explain: "Горящие свечи сгорят дотла за ночь, а останутся только те 3 свечи, которые погасли!"
+        },
+        {
+            topic: "📐 Пространство и распилы",
+            text: "Деревянный брус нужно распилить на 12 равных частей.\nСколько распилов придётся сделать?",
+            code: "",
+            answers: ["11", "ОДИННАДЦАТЬ"],
+            hint: "Чтобы получить 2 части, нужен 1 распил. Чтобы 3 части — 2 распила...",
+            explain: "Число распилов всегда на 1 меньше числа получаемых кусков: 12 − 1 = 11."
+        },
+        {
+            topic: "🧮 Быстрый счёт",
+            text: "Тетрадь и ручка вместе стоят 110 рублей. Тетрадь дороже ручки на 100 рублей.\nСколько рублей стоит ручка?",
+            code: "Тетрадь + Ручка = 110 ₽",
+            answers: ["5", "ПЯТЬ", "5 РУБ", "5 РУБЛЕЙ", "5₽"],
+            hint: "Если бы ручка стоила 10 рублей, то тетрадь стоила бы 110, а вместе вышло бы 120.",
+            explain: "Пусть ручка стоит X, тогда тетрадь X + 100. Получаем 2X + 100 = 110 → X = 5 рублей."
+        },
+        {
+            topic: "💻 Информатика и логика",
+            text: "Какое число пропущено в ряду степеней?",
+            code: "1,  2,  4,  8,  16,  ?,  64,  128",
+            answers: ["32"],
+            hint: "Каждое следующее число в 2 раза больше предыдущего.",
+            explain: "Это степени двойки: 2⁵ = 32."
+        },
+        {
+            topic: "🌿 Прогрессия",
+            text: "На озере растут кувшинки. Каждый день их площадь увеличивается ровно в 2 раза. На 20-й день кувшинки закрыли всё озеро целиком.\nНа какой по счёту день они закрывали ровно половину озера?",
+            code: "",
+            answers: ["19", "ДЕВЯТНАДЦАТЫЙ", "НА 19", "19 ДЕНЬ"],
+            hint: "Посмотри на задачу с конца: если на 20-й день озеро закрыто на 100%, сколько было за день до этого?",
+            explain: "Так как площадь удваивается каждый день, половину озера кувшинки занимали ровно за день до финала — на 19-й день."
+        },
+        {
+            topic: "🎲 Вероятность",
+            text: "В тёмном ящике лежат 10 чёрных и 10 белых носков.\nКакое минимальное количество носков нужно вытащить вслепую, чтобы среди них гарантированно оказалась хотя бы одна пара одного цвета?",
+            code: "",
+            answers: ["3", "ТРИ"],
+            hint: "Представь самый неудачный случай: первый носок чёрный, второй белый...",
+            explain: "Если первые два носка окажутся разного цвета, то 3-й носок обязательно совпадёт с одним из них."
+        },
+        {
+            topic: "🏎️ Средняя скорость",
+            text: "Автомобиль проехал путь из города А в город Б со скоростью 60 км/ч, а обратно — со скоростью 40 км/ч.\nЧему равна его средняя скорость (в км/ч) на всём пути?",
+            code: "Туда: 60 км/ч   |   Обратно: 40 км/ч",
+            answers: ["48", "48 КМ/Ч"],
+            hint: "Средняя скорость — это весь путь, делённый на всё время (ответ не 50!). Возьми расстояние между городами равным 120 км.",
+            explain: "Пусть путь = 120 км. Туда: 120/60 = 2 ч, обратно: 120/40 = 3 ч. Весь путь 240 км за 5 часов → 240 / 5 = 48 км/ч."
+        },
+        {
+            topic: "🏆 Финальный код",
+            text: "Найди логику в равенствах и впиши недостающее число:",
+            code: "3 + 2 = 15   |   4 + 3 = 28   |   5 + 4 = 45   |   6 + 2 = ?",
+            answers: ["48"],
+            hint: "Попробуй сначала сложить числа, а затем умножить результат на первое число.",
+            explain: "Формула: A × (A + B). Проверяем: 3×5=15, 4×7=28, 5×9=45. Для 6 и 2: 6 × (6 + 2) = 48."
         }
     ];
 
-    const QUESTION_TIME_LIMIT = 25; // секунд на один вопрос
-    let playerName = "Игрок";
+    let playerName = "Участник";
     let currentIndex = 0;
     let score = 0;
-    let correctCount = 0;
+    let solvedCount = 0;
     let streak = 0;
     let bestStreak = 0;
-    let questionStartTime = 0;
+    let hintsUsed = 0;
+    let hintUsedOnCurrent = false;
+    let gameStartTime = 0;
+    let taskStartTime = 0;
     let timerInterval = null;
-    let answered = false;
 
-    function sendStats(eventName, extraPoints = 0) {
+    function sendStats(eventName) {
         if (!GOOGLE_SCRIPT_URL) return;
+        const mins = ((Date.now() - gameStartTime) / 60000).toFixed(1);
         fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
@@ -542,156 +663,188 @@
                 playerId: playerName,
                 stage: currentIndex + 1,
                 event: eventName,
-                timeMins: score,
-                hints: streak
+                timeMins: `${mins}m | ${score}pts`,
+                hints: hintsUsed
             })
         }).catch(() => {});
     }
 
     function startGame() {
-        const inputName = document.getElementById("player-name").value.trim();
-        playerName = inputName || ("Игрок-" + Math.floor(100 + Math.random() * 900));
+        const val = document.getElementById("player-name").value.trim();
+        playerName = val || ("Игрок-" + Math.floor(100 + Math.random() * 900));
+        gameStartTime = Date.now();
 
         document.getElementById("start-screen").style.display = "none";
         document.getElementById("game-screen").style.display = "flex";
-        sendStats("KAHOOT_START");
-        loadQuestion();
+
+        timerInterval = setInterval(updateGlobalTimer, 1000);
+        sendStats("START_15");
+        renderTask();
     }
 
-    function loadQuestion() {
-        answered = false;
-        const q = QUESTIONS[currentIndex];
+    function updateGlobalTimer() {
+        const sec = Math.floor((Date.now() - gameStartTime) / 1000);
+        const m = String(Math.floor(sec / 60)).padStart(2, '0');
+        const s = String(sec % 60).padStart(2, '0');
+        document.getElementById("hud-timer").innerText = `⏱ ${m}:${s}`;
+    }
 
-        document.getElementById("hud-step").innerText = `${currentIndex + 1} / ${QUESTIONS.length}`;
-        document.getElementById("hud-score").innerText = `🏆 ${score}`;
-        document.getElementById("q-category").innerText = q.category;
-        document.getElementById("q-text").innerText = q.text;
+    function renderTask() {
+        hintUsedOnCurrent = false;
+        taskStartTime = Date.now();
+        const t = TASKS[currentIndex];
 
-        for (let i = 0; i < 4; i++) {
-            document.getElementById(`opt-${i}`).innerText = q.options[i];
-        }
+        document.getElementById("hud-progress").innerText = `Задача ${currentIndex + 1} из ${TASKS.length}`;
+        document.getElementById("hud-score").innerText = `⚡ ${score} очк.`;
+        document.getElementById("progress-fill").style.width = `${(currentIndex / TASKS.length) * 100}%`;
 
         const streakEl = document.getElementById("hud-streak");
         if (streak > 0) {
-            streakEl.style.opacity = "1";
+            streakEl.style.display = "flex";
             streakEl.innerText = `🔥 Серия: ${streak}`;
         } else {
-            streakEl.style.opacity = "0";
+            streakEl.style.display = "none";
         }
 
-        // Запуск таймера вопроса
-        questionStartTime = Date.now();
-        const bar = document.getElementById("timer-bar");
-        bar.style.width = "100%";
-        bar.style.backgroundColor = "#00f5d4";
+        document.getElementById("q-topic").innerText = t.topic;
+        document.getElementById("q-text").innerText = t.text;
 
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            const elapsed = (Date.now() - questionStartTime) / 1000;
-            const remaining = Math.max(0, QUESTION_TIME_LIMIT - elapsed);
-            const pct = (remaining / QUESTION_TIME_LIMIT) * 100;
-            bar.style.width = `${pct}%`;
+        const codeEl = document.getElementById("q-code");
+        if (t.code) {
+            codeEl.style.display = "block";
+            codeEl.innerText = t.code;
+        } else {
+            codeEl.style.display = "none";
+        }
 
-            if (pct < 30) bar.style.backgroundColor = "#ff2a5f";
-            else if (pct < 60) bar.style.backgroundColor = "#ffbe0b";
+        document.getElementById("hint-box").style.display = "none";
+        document.getElementById("hint-box").innerText = "💡 " + t.hint;
+        document.getElementById("error-banner").innerText = "";
 
-            if (remaining <= 0 && !answered) {
-                clearInterval(timerInterval);
-                handleTimeout();
-            }
-        }, 50);
+        const input = document.getElementById("open-answer");
+        input.value = "";
+        setTimeout(() => input.focus(), 100);
     }
 
-    function selectAnswer(choiceIndex) {
-        if (answered) return;
-        answered = true;
-        clearInterval(timerInterval);
+    function submitAnswer() {
+        const input = document.getElementById("open-answer");
+        const userVal = input.value.trim().toUpperCase().replace(/\s+/g, " ");
+        if (!userVal) return;
 
-        const q = QUESTIONS[currentIndex];
-        const isCorrect = choiceIndex === q.correct;
-        const elapsed = (Date.now() - questionStartTime) / 1000;
+        const t = TASKS[currentIndex];
+        const valid = t.answers.map(a => a.toUpperCase());
 
-        const fbScreen = document.getElementById("feedback-screen");
-        fbScreen.className = "feedback-overlay " + (isCorrect ? "correct" : "wrong");
-        fbScreen.style.display = "flex";
-
-        if (isCorrect) {
-            correctCount++;
+        if (valid.includes(userVal)) {
+            solvedCount++;
             streak++;
             if (streak > bestStreak) bestStreak = streak;
 
-            // Расчёт очков как в Kahoot: базовые + бонус за скорость + бонус за серию
-            const speedRatio = Math.max(0.2, 1 - (elapsed / QUESTION_TIME_LIMIT) * 0.5);
-            const earned = Math.round(1000 * speedRatio) + (streak > 1 ? streak * 100 : 0);
-            score += earned;
+            const elapsedSec = (Date.now() - taskStartTime) / 1000;
+            const speedBonus = Math.max(0, Math.round(300 - elapsedSec * 5));
+            const streakBonus = streak > 1 ? streak * 100 : 0;
+            const hintPenalty = hintUsedOnCurrent ? 200 : 0;
+            const earned = Math.max(300, 700 + speedBonus + streakBonus - hintPenalty);
 
-            document.getElementById("fb-icon").innerText = "🎉";
-            document.getElementById("fb-title").innerText = "ВЕРНО!";
-            document.getElementById("fb-points").innerText = `+${earned} очков` + (streak > 1 ? ` (🔥 x${streak})` : "");
-            sendStats(`CORRECT (+${earned})`);
+            score += earned;
+            sendStats(`SOLVED (+${earned})`);
+            showResolve(true, earned, t.explain);
         } else {
             streak = 0;
-            document.getElementById("fb-icon").innerText = "💥";
-            document.getElementById("fb-title").innerText = "НЕВЕРНО!";
-            document.getElementById("fb-points").innerText = `Правильный ответ: ${q.options[q.correct]}`;
-            sendStats(`WRONG (${q.options[choiceIndex]})`);
+            document.getElementById("hud-streak").style.display = "none";
+            document.getElementById("error-banner").innerText = "❌ Неточно. Попробуй другой подход или открой подсказку!";
+            sendStats(`WRONG: ${userVal}`);
+
+            const box = document.getElementById("question-container");
+            box.classList.remove("shake");
+            void box.offsetWidth;
+            box.classList.add("shake");
+        }
+    }
+
+    function skipTask() {
+        streak = 0;
+        const t = TASKS[currentIndex];
+        sendStats("SKIPPED");
+        showResolve(false, 0, `Правильный ответ: ${t.answers[0]}\n\n${t.explain}`);
+    }
+
+    function showResolve(isSolved, earned, explanation) {
+        const overlay = document.getElementById("resolve-screen");
+        const title = document.getElementById("res-title");
+
+        if (isSolved) {
+            document.getElementById("res-icon").innerText = "🎯";
+            title.innerText = "ВЕРНО!";
+            title.className = "resolve-title ok";
+            document.getElementById("res-points").innerText = `+${earned} очков` + (streak > 1 ? ` (🔥 Серия x${streak})` : "");
+        } else {
+            document.getElementById("res-icon").innerText = "⏭";
+            title.innerText = "ЗАДАЧА ПРОПУЩЕНА";
+            title.className = "resolve-title skip";
+            document.getElementById("res-points").innerText = "0 очков";
         }
 
-        document.getElementById("fb-explain").innerText = q.explain;
+        document.getElementById("res-explain").innerText = explanation;
+        overlay.style.display = "flex";
     }
 
-    function handleTimeout() {
-        answered = true;
-        streak = 0;
-        const q = QUESTIONS[currentIndex];
-        const fbScreen = document.getElementById("feedback-screen");
-        fbScreen.className = "feedback-overlay wrong";
-        fbScreen.style.display = "flex";
-
-        document.getElementById("fb-icon").innerText = "⏰";
-        document.getElementById("fb-title").innerText = "ВРЕМЯ ВЫШЛО!";
-        document.getElementById("fb-points").innerText = `Правильный ответ: ${q.options[q.correct]}`;
-        document.getElementById("fb-explain").innerText = q.explain;
-        sendStats("TIMEOUT");
-    }
-
-    function nextQuestion() {
-        document.getElementById("feedback-screen").style.display = "none";
+    function goNext() {
+        document.getElementById("resolve-screen").style.display = "none";
         currentIndex++;
 
-        if (currentIndex < QUESTIONS.length) {
-            loadQuestion();
+        if (currentIndex < TASKS.length) {
+            renderTask();
         } else {
-            showPodium();
+            finishGame();
         }
     }
 
-    function showPodium() {
+    function toggleHint() {
+        const box = document.getElementById("hint-box");
+        if (box.style.display === "none") {
+            box.style.display = "block";
+            if (!hintUsedOnCurrent) {
+                hintUsedOnCurrent = true;
+                hintsUsed++;
+                sendStats("HINT_USED");
+            }
+        }
+    }
+
+    function finishGame() {
+        clearInterval(timerInterval);
         document.getElementById("game-screen").style.display = "none";
-        document.getElementById("podium-screen").style.display = "flex";
+        document.getElementById("results-screen").style.display = "flex";
 
-        const accuracy = Math.round((correctCount / QUESTIONS.length) * 100);
-        let rank = "🌱 Новичок логики";
-        if (accuracy === 100) rank = "👑 Легенда Logic Arena";
-        else if (accuracy >= 70) rank = "🚀 Мастер дедукции";
-        else if (accuracy >= 45) rank = "💡 Уверенный аналитик";
+        const totalSec = Math.floor((Date.now() - gameStartTime) / 1000);
+        const m = String(Math.floor(totalSec / 60)).padStart(2, '0');
+        const s = String(totalSec % 60).padStart(2, '0');
 
-        document.getElementById("final-nick").innerText = playerName;
-        document.getElementById("final-score").innerText = score.toLocaleString("ru-RU");
-        document.getElementById("final-rank").innerText = rank;
-        document.getElementById("final-correct").innerText = `${correctCount} / ${QUESTIONS.length}`;
-        document.getElementById("final-accuracy").innerText = `${accuracy}%`;
-        document.getElementById("final-streak").innerText = bestStreak;
+        let rank = "🌱 Начинающий исследователь";
+        if (solvedCount === TASKS.length && hintsUsed === 0) rank = "👑 Абсолютный гений логики";
+        else if (solvedCount >= 12) rank = "🚀 Мастер дедукции";
+        else if (solvedCount >= 8) rank = "💡 Уверенный аналитик";
 
-        sendStats(`FINISH: ${score} pts (${correctCount}/${QUESTIONS.length})`);
+        document.getElementById("fin-name").innerText = playerName;
+        document.getElementById("fin-score").innerText = score.toLocaleString("ru-RU");
+        document.getElementById("fin-rank").innerText = rank;
+        document.getElementById("fin-solved").innerText = `${solvedCount} / ${TASKS.length}`;
+        document.getElementById("fin-time").innerText = `${m}:${s}`;
+        document.getElementById("fin-streak").innerText = bestStreak;
+        document.getElementById("fin-hints").innerText = hintsUsed;
+
+        sendStats(`FINISHED (${solvedCount}/${TASKS.length}, ${score} pts)`);
 
         if (typeof confetti === "function") {
-            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            confetti({ particleCount: 110, spread: 75, origin: { y: 0.6 } });
         }
     }
 
-    document.getElementById("player-name").addEventListener("keypress", function(e) {
+    document.getElementById("player-name").addEventListener("keypress", (e) => {
         if (e.key === "Enter") startGame();
+    });
+    document.getElementById("open-answer").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") submitAnswer();
     });
 </script>
 
