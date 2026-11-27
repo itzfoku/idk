@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ПРОТОКОЛ ОТБОРА // ТЕРМИНАЛ</title>
+    <title>ЛОГИЧЕСКИЙ ТЕСТ // ПРОТОКОЛ</title>
     <style>
         :root {
             --bg: #080808;
             --text: #e0e0e0;
             --accent: #00ff66;
-            --dim: #555555;
+            --dim: #666666;
             --error: #ff3b30;
             --border: #222222;
         }
@@ -28,7 +28,7 @@
         }
         .terminal {
             width: 100%;
-            max-width: 680px;
+            max-width: 700px;
             border: 1px solid var(--border);
             background: #0d0d0d;
             padding: 28px;
@@ -39,46 +39,43 @@
             justify-content: space-between;
             border-bottom: 1px solid var(--border);
             padding-bottom: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             font-size: 13px;
             color: var(--dim);
         }
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            margin-right: 6px;
-            box-shadow: 0 0 8px var(--accent);
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #1a1a1a;
+            margin-bottom: 24px;
         }
-        .logo {
-            text-align: center;
-            font-size: 28px;
-            letter-spacing: 6px;
-            margin-bottom: 20px;
-            color: var(--accent);
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
         }
         .stage-title {
             color: var(--accent);
-            font-size: 18px;
+            font-size: 17px;
             margin-bottom: 14px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .story-text {
-            line-height: 1.6;
+        .question-text {
+            line-height: 1.65;
             font-size: 16px;
             margin-bottom: 20px;
             white-space: pre-line;
         }
-        .cipher-box {
+        .task-box {
             background: #141414;
             border-left: 3px solid var(--accent);
-            padding: 14px;
+            padding: 16px;
             margin: 18px 0;
-            font-size: 15px;
-            word-break: break-all;
-            color: #fff;
+            font-size: 16px;
+            color: #ffffff;
+            line-height: 1.5;
         }
         .input-group {
             display: flex;
@@ -96,9 +93,7 @@
             outline: none;
             text-transform: uppercase;
         }
-        input[type="text"]:focus {
-            border-color: var(--accent);
-        }
+        input[type="text"]:focus { border-color: var(--accent); }
         button {
             background: var(--accent);
             color: #000;
@@ -111,13 +106,19 @@
             text-transform: uppercase;
         }
         button:active { opacity: 0.8; }
-        .hint-btn {
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            gap: 10px;
+        }
+        .secondary-btn {
             background: transparent;
             color: var(--dim);
             border: 1px solid #222;
             padding: 8px 14px;
             font-size: 13px;
-            margin-top: 16px;
         }
         .hint-box {
             display: none;
@@ -134,37 +135,56 @@
             font-size: 14px;
             min-height: 20px;
         }
-        .badge {
+        .result-card {
             border: 1px solid var(--accent);
-            padding: 20px;
-            text-align: center;
+            padding: 24px;
             margin-top: 20px;
+            background: #0a0f0c;
         }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .stat-item {
+            background: #121212;
+            padding: 12px;
+            border: 1px solid #222;
+        }
+        .stat-label { font-size: 12px; color: #777; }
+        .stat-val { font-size: 20px; color: #fff; font-weight: bold; margin-top: 4px; }
     </style>
 </head>
 <body>
 
 <div class="terminal">
     <div class="header">
-        <div><span class="status-dot"></span>УЗЕЛ СВЯЗИ АКТИВЕН</div>
+        <div id="step-counter">ВОПРОС 1 / 7</div>
         <div id="timer">00:00</div>
     </div>
 
-    <div class="logo">△ 3301-S</div>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
 
     <div id="game-area">
         <div class="stage-title" id="stage-title">Загрузка...</div>
-        <div class="story-text" id="stage-text"></div>
-        <div class="cipher-box" id="stage-cipher"></div>
+        <div class="question-text" id="stage-text"></div>
+        <div class="task-box" id="stage-task"></div>
 
         <div class="input-group">
-            <input type="text" id="answer-input" placeholder="ВВЕДИТЕ КЛЮЧ..." autocomplete="off">
-            <button onclick="checkAnswer()">ВВОД</button>
+            <input type="text" id="answer-input" placeholder="ВВЕДИТЕ ОТВЕТ..." autocomplete="off">
+            <button onclick="checkAnswer()">ДАЛЕЕ →</button>
         </div>
 
         <div class="error-msg" id="error-msg"></div>
 
-        <button class="hint-btn" onclick="toggleHint()">[ ? ] ЗАПРОСИТЬ ПОДСКАЗКУ</button>
+        <div class="controls-row">
+            <button class="secondary-btn" onclick="toggleHint()">[ ? ] ПОДСКАЗКА</button>
+            <button class="secondary-btn" onclick="skipQuestion()">ПРОПУСТИТЬ ВОПРОС »</button>
+        </div>
         <div class="hint-box" id="hint-box"></div>
     </div>
 </div>
@@ -172,51 +192,69 @@
 <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzP6PEgoLG4SX9CyF4sJHtifAM2-hRL8puWnaKUG0dhUCmFBCN9sjk9PWAi8XV0cMee/exec";
 
-    // Этапы с SHA-256 хешами ответов (в верхнем регистре)
-    const STAGES = [
+    // 7 логических вопросов (ответы в массиве — поддерживается несколько вариантов написания)
+    const QUESTIONS = [
         {
-            title: "ЭТАП 01 // ФИЛЬТР ВНИМАНИЯ",
-            text: "Мы ищем тех, кто умеет смотреть, а не просто видеть.\nРасшифруй место первой физической закладки в здании школы:",
-            cipher: "42 48 41 4B 49 4F 54 45 4B 41 (HEX → ASCII, транслит)\n\nНайди там книгу А. Азимова «Я, робот» и введи слово с закладки:",
-            // SHA-256 от "ВЕКТОР"
-            answerHash: "4b252e905a17609214006b8b06850e9b71c3274d3363f9327c07232959d9e205",
-            hint: "Переведи шестнадцатеричный код в буквы (получится БИБЛИОТЕКА). Внутри книги на 15 странице лежит закладка."
+            title: "01 // ЧИСЛОВАЯ ЗАКОНОМЕРНОСТЬ",
+            text: "Определите следующее число в последовательности:",
+            task: "2,  6,  12,  20,  30,  ?",
+            answers: ["42"],
+            hint: "Посмотрите на разницу между соседними числами: +4, +6, +8, +10..."
         },
         {
-            title: "ЭТАП 02 // НАБЛЮДАТЕЛЬНОСТЬ",
-            text: "Доступ подтвержден. Следующий узел находится на 3 этаже возле кабинета информатики.\nНайди на информационном стенде метку с символом △ и расшифруй последовательность:",
-            cipher: "Сдвиг Цезаря (+3): ФЛНДГД",
-            // SHA-256 от "ЦИКАДА"
-            answerHash: "86a173d7f0c9c6b66f9f0e888a6835661a027762a57198967c22249b942d7697",
-            hint: "Каждую букву в слове ФЛНДГД сдвинь на 3 позиции назад по русскому алфавиту."
+            title: "02 // КЛАССИЧЕСКАЯ ЛОГИКА",
+            text: "Внимательно прочитайте условие:",
+            task: "Улитка ползёт вверх по столбу высотой 10 метров. За день она поднимается на 3 метра, а за ночь сползает вниз на 2 метра. На какой по счёту день улитка впервые достигнет вершины столба?",
+            answers: ["8", "ВОСЬМОЙ", "НА 8", "8 ДЕНЬ"],
+            hint: "После 7 суток она будет на высоте 7 метров. Сколько ей останется проползти на 8-й день?"
         },
         {
-            title: "ЭТАП 03 // ПОЛЕВАЯ ЗАДАЧА",
-            text: "Отсчитай 10 шагов от главной лестницы в сторону актового зала. Проверь под подоконником третьего окна.\nВнутри конверта находится логическая задача. Введи числовой ключ:",
-            cipher: "Ожидание физического ключа из конверта #03...",
-            // SHA-256 от "42"
-            answerHash: "73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049",
-            hint: "В задаче внутри конверта нужно сложить только простые числа из таблицы."
+            title: "03 // РЫЦАРИ И ЛЖЕЦЫ",
+            text: "Рыцари всегда говорят правду, а лжецы всегда лгут. Вы встретили двух жителей острова — А и Б.",
+            task: "А сказал: «Мы оба с Б — лжецы».\nКто из них кто? (Напишите два слова через пробел, например: ЛЖЕЦ РЫЦАРЬ)",
+            answers: ["ЛЖЕЦ РЫЦАРЬ", "ЛЖЕЦ И РЫЦАРЬ"],
+            hint: "Может ли рыцарь назвать себя лжецом? А если А лжёт, значит фраза «мы оба лжецы» — ложь."
+        },
+        {
+            title: "04 // ЛОГИКА СЛОВ",
+            text: "Найдите закономерность в ряду букв и укажите следующую:",
+            task: "О,  Д,  Т,  Ч,  П,  Ш,  С,  ?",
+            answers: ["В"],
+            hint: "Это первые буквы слов: Один, Два, Три, Четыре..."
+        },
+        {
+            title: "05 // ВЗВЕШИВАНИЕ",
+            text: "Задача на поиск минимального числа действий:",
+            task: "Есть 9 внешне одинаковых монет, но одна из них фальшивая (она легче остальных). Какое минимальное количество взвешиваний на чашечных весах без гирь потребуется, чтобы гарантированно найти фальшивую монету?",
+            answers: ["2", "ДВА"],
+            hint: "Разделите монеты на три кучки по 3 штуки."
+        },
+        {
+            title: "06 // ЧАСЫ И УГЛЫ",
+            text: "Пространственное мышление:",
+            task: "Часы показывают ровно 3:15. Чему равен угол (в градусах) между часовой и минутной стрелками? (Введите только число, возможно дробное через точку)",
+            answers: ["7.5", "7,5"],
+            hint: "Минутная стрелка стоит ровно на тройке, но часовая за 15 минут прошла четверть пути от 3 до 4 (1/4 от 30 градусов)."
+        },
+        {
+            title: "07 // ФИНАЛЬНЫЙ ШИФР",
+            text: "Используйте логику и алфавит:",
+            task: "Если КОД = 12-16-5, то чему равно слово УМ? (Запишите числа через дефис)",
+            answers: ["21-14"],
+            hint: "Каждой букве соответствует её порядковый номер в русском алфавите (К=12, О=16, Д=5)."
         }
     ];
 
-    let currentStage = parseInt(localStorage.getItem("arg_stage")) || 0;
-    let startTime = parseInt(localStorage.getItem("arg_start")) || Date.now();
-    let hintsUsed = parseInt(localStorage.getItem("arg_hints")) || 0;
-    let playerId = localStorage.getItem("arg_id") || ("ID-" + Math.floor(1000 + Math.random() * 9000));
+    let currentStep = parseInt(localStorage.getItem("lq_step")) || 0;
+    let solvedCount = parseInt(localStorage.getItem("lq_solved")) || 0;
+    let wrongAttempts = parseInt(localStorage.getItem("lq_wrong")) || 0;
+    let hintsUsed = parseInt(localStorage.getItem("lq_hints")) || 0;
+    let startTime = parseInt(localStorage.getItem("lq_start")) || Date.now();
+    let playerId = localStorage.getItem("lq_id") || ("USER-" + Math.floor(1000 + Math.random() * 9000));
 
-    localStorage.setItem("arg_start", startTime);
-    localStorage.setItem("arg_id", playerId);
+    localStorage.setItem("lq_start", startTime);
+    localStorage.setItem("lq_id", playerId);
 
-    // Функция вычисления SHA-256 в браузере
-    async function sha256(message) {
-        const msgBuffer = new TextEncoder().encode(message);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    // Отправка аналитики в Google Таблицу
     function sendStats(eventName) {
         if (!GOOGLE_SCRIPT_URL) return;
         const timeMins = ((Date.now() - startTime) / 60000).toFixed(1);
@@ -226,7 +264,7 @@
             headers: { "Content-Type": "text/plain" },
             body: JSON.stringify({
                 playerId: playerId,
-                stage: currentStage + 1,
+                stage: currentStep + 1,
                 event: eventName,
                 timeMins: timeMins,
                 hints: hintsUsed
@@ -234,70 +272,111 @@
         }).catch(() => {});
     }
 
-    // Логируем старт нового игрока
-    if (!localStorage.getItem("arg_started_logged")) {
-        sendStats("START");
-        localStorage.setItem("arg_started_logged", "1");
+    if (!localStorage.getItem("lq_started")) {
+        sendStats("TEST_START");
+        localStorage.setItem("lq_started", "1");
     }
 
     setInterval(() => {
-        if (currentStage >= STAGES.length) return;
+        if (currentStep >= QUESTIONS.length) return;
         const diff = Math.floor((Date.now() - startTime) / 1000);
         const mins = String(Math.floor(diff / 60)).padStart(2, '0');
         const secs = String(diff % 60).padStart(2, '0');
         document.getElementById("timer").innerText = `${mins}:${secs}`;
     }, 1000);
 
-    function renderStage() {
-        const gameArea = document.getElementById("game-area");
+    function getRank(score, total) {
+        const ratio = score / total;
+        if (ratio === 1 && hintsUsed === 0) return "АБСОЛЮТНЫЙ АНАЛИТИК (S-РАНГ)";
+        if (ratio >= 0.85) return "ВЫСОКИЙ ИНТЕЛЛЕКТ (A-РАНГ)";
+        if (ratio >= 0.55) return "ЛОГИК-ПРАКТИК (B-РАНГ)";
+        return "НАЧИНАЮЩИЙ ИССЛЕДОВАТЕЛЬ (C-РАНГ)";
+    }
 
-        if (currentStage >= STAGES.length) {
+    function renderStep() {
+        const progressPercent = (currentStep / QUESTIONS.length) * 100;
+        document.getElementById("progress-fill").style.width = `${progressPercent}%`;
+
+        if (currentStep >= QUESTIONS.length) {
             const totalMins = ((Date.now() - startTime) / 60000).toFixed(1);
-            gameArea.innerHTML = `
-                <div class="stage-title">ОТБОР ЗАВЕРШЕН // ДОСТУП ОТКРЫТ</div>
-                <div class="story-text">Вы доказали способность находить скрытые связи. Ваши данные внесены в Реестр.</div>
-                <div class="badge">
-                    <div style="color:#888; font-size:13px;">ПЕРСОНАЛЬНЫЙ ИДЕНТИФИКАТОР</div>
-                    <div style="font-size:28px; color:#00ff66; margin:10px 0;">${playerId}</div>
-                    <div style="font-size:14px;">Время: <b>${totalMins} мин.</b> | Подсказок: <b>${hintsUsed}</b></div>
+            const rank = getRank(solvedCount, QUESTIONS.length);
+            document.getElementById("step-counter").innerText = "ТЕСТ ЗАВЕРШЁН";
+
+            document.getElementById("game-area").innerHTML = `
+                <div class="stage-title">РЕЗУЛЬТАТЫ ТЕСТИРОВАНИЯ</div>
+                <div class="result-card">
+                    <div style="color:#888; font-size:12px;">ПРИСВОЕННЫЙ РАНГ</div>
+                    <div style="font-size:20px; color:#00ff66; font-weight:bold; margin:8px 0 16px 0;">${rank}</div>
+
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">РЕШЕНО ЗАДАЧ</div>
+                            <div class="stat-val">${solvedCount} из ${QUESTIONS.length}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ЗАТРАЧЕНО ВРЕМЕНИ</div>
+                            <div class="stat-val">${totalMins} мин.</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ОШИБОЧНЫХ ПОПЫТОК</div>
+                            <div class="stat-val">${wrongAttempts}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ПОДСКАЗОК</div>
+                            <div class="stat-val">${hintsUsed}</div>
+                        </div>
+                    </div>
+
+                    <div style="font-size:13px; color:#666; text-align:center;">ID сессии: ${playerId}</div>
                 </div>
-                <div class="story-text" style="margin-top:20px; font-size:14px; color:#aaa;">
-                    Покажите этот экран организатору, чтобы получить физический знак отличия.
-                </div>
-                <button class="hint-btn" onclick="resetGame()">[ СБРОСИТЬ ПРОГРЕСС ]</button>
+
+                <button class="secondary-btn" style="margin-top:20px; width:100%;" onclick="resetTest()">[ ПРОЙТИ ЗАНОВО ]</button>
             `;
             return;
         }
 
-        const stage = STAGES[currentStage];
-        document.getElementById("stage-title").innerText = stage.title;
-        document.getElementById("stage-text").innerText = stage.text;
-        document.getElementById("stage-cipher").innerText = stage.cipher;
-        document.getElementById("hint-box").innerText = stage.hint;
+        const q = QUESTIONS[currentStep];
+        document.getElementById("step-counter").innerText = `ВОПРОС ${currentStep + 1} / ${QUESTIONS.length}`;
+        document.getElementById("stage-title").innerText = q.title;
+        document.getElementById("stage-text").innerText = q.text;
+        document.getElementById("stage-task").innerText = q.task;
+        document.getElementById("hint-box").innerText = q.hint;
         document.getElementById("hint-box").style.display = "none";
         document.getElementById("answer-input").value = "";
         document.getElementById("error-msg").innerText = "";
     }
 
-    async function checkAnswer() {
+    function checkAnswer() {
         const input = document.getElementById("answer-input").value.trim().toUpperCase();
         if (!input) return;
 
-        const inputHash = await sha256(input);
-        const correctHash = STAGES[currentStage].answerHash;
+        const validAnswers = QUESTIONS[currentStep].answers.map(a => a.toUpperCase());
 
-        if (inputHash === correctHash) {
-            sendStats("STAGE_PASSED");
-            currentStage++;
-            localStorage.setItem("arg_stage", currentStage);
-            if (currentStage >= STAGES.length) {
-                sendStats("FINISHED");
-            }
-            renderStage();
+        if (validAnswers.includes(input)) {
+            solvedCount++;
+            localStorage.setItem("lq_solved", solvedCount);
+            sendStats("SOLVED");
+            nextStep();
         } else {
-            sendStats("WRONG_ANSWER: " + input);
-            document.getElementById("error-msg").innerText = "[ ОШИБКА ]: НЕВЕРНЫЙ КЛЮЧ ДОСТУПА";
+            wrongAttempts++;
+            localStorage.setItem("lq_wrong", wrongAttempts);
+            sendStats("WRONG: " + input);
+            document.getElementById("error-msg").innerText = "[ НЕВЕРНО ] — Попробуйте ещё раз или возьмите подсказку.";
         }
+    }
+
+    function skipQuestion() {
+        sendStats("SKIPPED");
+        nextStep();
+    }
+
+    function nextStep() {
+        currentStep++;
+        localStorage.setItem("lq_step", currentStep);
+        if (currentStep >= QUESTIONS.length) {
+            sendStats(`FINISHED (${solvedCount}/${QUESTIONS.length})`);
+        }
+        renderStep();
     }
 
     function toggleHint() {
@@ -305,12 +384,12 @@
         if (box.style.display === "none") {
             box.style.display = "block";
             hintsUsed++;
-            localStorage.setItem("arg_hints", hintsUsed);
+            localStorage.setItem("lq_hints", hintsUsed);
             sendStats("HINT_USED");
         }
     }
 
-    function resetGame() {
+    function resetTest() {
         localStorage.clear();
         location.reload();
     }
@@ -319,7 +398,7 @@
         if (e.key === "Enter") checkAnswer();
     });
 
-    renderStage();
+    renderStep();
 </script>
 
 </body>
